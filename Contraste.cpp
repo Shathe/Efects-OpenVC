@@ -5,7 +5,7 @@ using namespace cv;
 
 int main(int argc, char** argv) {
 	enum Space {
-		Ycrcb, Lab, HSV
+		Ycrcb, Lab, HSV, RGB
 	};
 	VideoCapture cap(0); // open the default camera
 	if (cap.isOpened()) {
@@ -18,24 +18,28 @@ int main(int argc, char** argv) {
 		std::cout << "Contrast enhancement and histogram equalization "
 				<< std::endl;
 		std::cout << "-------------------------" << std::endl;
-		std::cout << "Enter the factor (must be a number): ";
+		std::cout << "Enter the factor (must be a number, for instance 1.75): ";
 		std::cin >> alpha;
-		std::cout << "Enter the bias (must be a number): ";
+		std::cout << "Enter the bias (must be a number, for instance 25): ";
 		std::cin >> beta;
 		std::cout
-				<< "Enter the color space Ycrcb, Lab or HSV (Good spaces for adjusting contrast, Ycrcb by defect)";
+				<< "Enter the color space Ycrcb, Lab, HSV or RGB (this last one no so good)\n"
+						"(Ycrcb or Lab are strongly recommend. Ycrcb by defect)";
+
 		std::cin >> colorSpace;
 		Space space = Ycrcb;
-		for(unsigned int i = 0; i < colorSpace.length(); ++i) {
+		for (unsigned int i = 0; i < colorSpace.length(); ++i) {
 			colorSpace[i] = tolower(colorSpace[i]);
 		}
 		if (colorSpace.find("lab") != std::string::npos)
 			space = Lab;
 
-		if (colorSpace.find("hsv")!= std::string::npos)
+		if (colorSpace.find("hsv") != std::string::npos)
 			space = HSV;
 
-		std::cout << space;
+		if (colorSpace.find("rgb") != std::string::npos)
+			space = RGB;
+
 		while (1) {
 			Mat frame;
 			cap >> frame;
@@ -64,7 +68,7 @@ int main(int argc, char** argv) {
 				cvtColor(new_image, img_hist_equalized, CV_BGR2Lab);
 				break;
 			default:
-				;
+				img_hist_equalized = new_image;
 			}
 
 			split(img_hist_equalized, channels);
@@ -73,13 +77,17 @@ int main(int argc, char** argv) {
 			switch (space) {
 			case Ycrcb:
 				equalizeHist(channels[0], channels[0]);
-				std::cout << "ycrcb";
 				break;
 			case HSV:
 				equalizeHist(channels[2], channels[2]);
 				break;
 			case Lab:
 				equalizeHist(channels[0], channels[0]);
+				break;
+			case RGB:
+				equalizeHist(channels[0], channels[0]);
+				equalizeHist(channels[1], channels[1]);
+				equalizeHist(channels[2], channels[2]);
 				break;
 			default:
 				;

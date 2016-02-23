@@ -8,11 +8,11 @@ int findBiggestContour(vector<vector<Point> >);
  * Apply some filters in order to  smoothen the image.
  */
 int applyFilters(Mat p1, int n) {
-	Scalar white = Scalar(100, 100, 100);
+	Scalar white = Scalar(110, 110, 100);
 	Scalar whitemax = Scalar(255, 255, 255);
 
 	// Filters: Blur and dilate
-	Mat element = getStructuringElement(MORPH_RECT, Size(5, 5));
+	Mat element = getStructuringElement(MORPH_RECT, Size(n,n));
 	blur(p1, p1, Size(2 * n, 2 * n));
 	inRange(p1, white, whitemax, p1);
 	dilate(p1, p1, element);
@@ -56,7 +56,7 @@ int main(int argc, char** argv) {
 			Mat canny_output;
 			vector<vector<Point> > contours;
 			vector<Vec4i> hierarchy;
-			Scalar hsv_min2 = Scalar(7, 10, 20);
+			Scalar hsv_min2 = Scalar(3, 10, 30);
 			Scalar hsv_max2 = Scalar(20, 150, 255);
 
 			/* Change the color space */

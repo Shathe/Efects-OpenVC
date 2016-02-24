@@ -3,7 +3,7 @@
 
 using namespace cv;
 
-int main2(int argc, char** argv) {
+int main9(int argc, char** argv) {
 	enum Space {
 		Ycrcb, Lab, HSV, RGB
 	};
@@ -111,8 +111,6 @@ int main2(int argc, char** argv) {
 			}
 
 			// Show images
-			namedWindow("Original Image", 1);
-			namedWindow("New Image", 1);
 			imshow(":O I can see you!", frame);
 			imshow("Contrast enhanced", img_hist_equalized);
 

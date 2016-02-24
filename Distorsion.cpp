@@ -4,7 +4,7 @@
 using namespace cv;
 
 
-int main3(int argc, char** argv) {
+int main4(int argc, char** argv) {
 
 	VideoCapture cap(0); // open the default camera
 	if (cap.isOpened()) {

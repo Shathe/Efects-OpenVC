@@ -19,7 +19,7 @@ int applyFilters(Mat p1, int n) {
 	inRange(p1, white, whitemax, p1);
 }
 
-int main(int argc, char** argv) {
+int main2(int argc, char** argv) {
 	enum Space {
 		blue, green, red
 	};
@@ -56,7 +56,7 @@ int main(int argc, char** argv) {
 			Mat canny_output;
 			vector<vector<Point> > contours;
 			vector<Vec4i> hierarchy;
-			Scalar hsv_min2 = Scalar(3, 10, 30);
+			Scalar hsv_min2 = Scalar(3, 12, 30);
 			Scalar hsv_max2 = Scalar(20, 150, 255);
 
 			/* Change the color space */
@@ -65,7 +65,7 @@ int main(int argc, char** argv) {
 
 			inRange(img_hist, hsv_min2, hsv_max2, p4);
 			//Aply some filters
-			applyFilters(p4, 4);
+			applyFilters(p4, 3.5);
 			p4.copyTo(p3);
 
 			/*Find the smallest contours */

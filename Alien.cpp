@@ -19,7 +19,7 @@ int applyFilters(Mat p1, int n) {
 	inRange(p1, white, whitemax, p1);
 }
 
-int main2(int argc, char** argv) {
+int main1(int argc, char** argv) {
 	enum Space {
 		blue, green, red
 	};
@@ -65,7 +65,7 @@ int main2(int argc, char** argv) {
 
 			inRange(img_hist, hsv_min2, hsv_max2, p4);
 			//Aply some filters
-			applyFilters(p4, 3.5);
+			applyFilters(p4, 4);
 			p4.copyTo(p3);
 
 			/*Find the smallest contours */
@@ -110,6 +110,7 @@ int main2(int argc, char** argv) {
 
 	return 0;
 }
+
 
 int findBiggestContour(vector<vector<Point> > contours) {
 	int indexOfBiggestContour = -1;

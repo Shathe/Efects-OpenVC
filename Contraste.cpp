@@ -3,7 +3,7 @@
 
 using namespace cv;
 
-int main9(int argc, char** argv) {
+int main(int argc, char** argv) {
 	enum Space {
 		Ycrcb, Lab, HSV, RGB
 	};
@@ -18,9 +18,9 @@ int main9(int argc, char** argv) {
 		std::cout << "Contrast enhancement and histogram equalization "
 				<< std::endl;
 		std::cout << "-------------------------" << std::endl;
-		std::cout << "Enter the factor (must be a number, for instance 1.75): ";
+		std::cout << "Enter the factor (must be a number, for instance 1.25): ";
 		std::cin >> alpha;
-		std::cout << "Enter the bias (must be a number, for instance 25): ";
+		std::cout << "Enter the bias (must be a number, for instance 10): ";
 		std::cin >> beta;
 		std::cout
 				<< "Enter the color space Ycrcb, Lab, HSV or RGB (this last one no so good)\n"
@@ -49,9 +49,11 @@ int main9(int argc, char** argv) {
 
 			/* Gives the new value to the new image (every pixel, every channel)
 			 * It does the operation new_image(i,j) = alpha*image(i,j) + beta */
-			frame.convertTo(new_image, -1, alpha, beta);
+			//frame.convertTo(new_image, -1, alpha, beta);
 
 			/* Histogram equalization */
+
+
 
 			vector<Mat> channels;
 			Mat img_hist_equalized;
@@ -59,13 +61,13 @@ int main9(int argc, char** argv) {
 			/* Changes the color image from BGR to other format */
 			switch (space) {
 			case Ycrcb:
-				cvtColor(new_image, img_hist_equalized, CV_BGR2YCrCb);
+				cvtColor(frame, img_hist_equalized, CV_BGR2YCrCb);
 				break;
 			case HSV:
-				cvtColor(new_image, img_hist_equalized, CV_BGR2HSV);
+				cvtColor(frame, img_hist_equalized, CV_BGR2HSV);
 				break;
 			case Lab:
-				cvtColor(new_image, img_hist_equalized, CV_BGR2Lab);
+				cvtColor(frame, img_hist_equalized, CV_BGR2Lab);
 				break;
 			default:
 				img_hist_equalized = new_image;
@@ -77,17 +79,23 @@ int main9(int argc, char** argv) {
 			switch (space) {
 			case Ycrcb:
 				equalizeHist(channels[0], channels[0]);
+				channels[0].convertTo(channels[0], -1, alpha, beta);
 				break;
 			case HSV:
 				equalizeHist(channels[2], channels[2]);
+				channels[2].convertTo(channels[2], -1, alpha, beta);
 				break;
 			case Lab:
 				equalizeHist(channels[0], channels[0]);
+				channels[0].convertTo(channels[0], -1, alpha, beta);
 				break;
 			case RGB:
 				equalizeHist(channels[0], channels[0]);
 				equalizeHist(channels[1], channels[1]);
 				equalizeHist(channels[2], channels[2]);
+				channels[0].convertTo(channels[0], -1, alpha, beta);
+				channels[1].convertTo(channels[1], -1, alpha, beta);
+				channels[2].convertTo(channels[2], -1, alpha, beta);
 				break;
 			default:
 				;
@@ -112,6 +120,8 @@ int main9(int argc, char** argv) {
 
 			// Show images
 			imshow(":O I can see you!", frame);
+
+
 			imshow("Contrast enhanced", img_hist_equalized);
 
 			if (waitKey(1) == 27)

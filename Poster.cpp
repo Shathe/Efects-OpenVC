@@ -112,7 +112,7 @@ Mat posterize(Mat src, int NeachChannel, int offset) {
 	}
 	return src;
 }
-int main(int argc, char** argv) {
+int main221(int argc, char** argv) {
 
 	VideoCapture cap(0); // open the default camera
 	if (cap.isOpened()) {
@@ -124,7 +124,7 @@ int main(int argc, char** argv) {
 			if (frame.empty())
 				break; // end of video stream
 
-			frame = posterize(frame, 3,2);
+			frame = posterize(frame, 2,0);
 			imshow(":O I can see you!", frame);
 
 			if (waitKey(1) == 27)

@@ -68,16 +68,14 @@ Mat posterize(Mat src, int NeachChannel, int offset) {
 		Mat prueba;
 		equalizeHist(channels[blue], prueba);
 		prueba = abs(channels[blue] - prueba);
-		float variationBlue = (sum(prueba)[0] / 150000000);
+		float variationBlue = (sum(prueba)[0] / 150000000)-0.03;
 		equalizeHist(channels[green], prueba);
 		prueba = abs(channels[green] - prueba);
-		float variationGreen = (sum(prueba)[0] / 150000000);
+		float variationGreen = (sum(prueba)[0] / 150000000) -0.03;
 		equalizeHist(channels[red], prueba);
 		prueba = abs(channels[red] - prueba);
-		float variationRed = (sum(prueba)[0] / 150000000);
+		float variationRed = (sum(prueba)[0] / 150000000)-0.03;
 
-		std::cout << variationRed;
-		std::cout << "  ";
 		for (int i = 0; i < src.rows; ++i) {
 			for (int j = 0; j < src.cols; ++j) {
 				uchar numSectionBlue = (channels[blue].at<uchar>(i, j)
@@ -124,11 +122,13 @@ Mat posterize(Mat src, int NeachChannel, int offset) {
 	}
 	return src;
 }
-int main(int argc, char** argv) {
+int main11(int argc, char** argv) {
 
 	VideoCapture cap(0); // open the default camera
 	if (cap.isOpened()) {
-		// check if we succeeded
+		int numberC=2;
+		std::cout << "Enter the number of divisions of each channel you want to have: ";
+				std::cin >> numberC;
 
 		while (1) {
 			Mat frame;
@@ -136,7 +136,7 @@ int main(int argc, char** argv) {
 			if (frame.empty())
 				break; // end of video stream
 
-			frame = posterize(frame, 30, 0);
+			frame = posterize(frame, numberC, 0);
 			imshow(":O I can see you!", frame);
 
 			if (waitKey(1) == 27)

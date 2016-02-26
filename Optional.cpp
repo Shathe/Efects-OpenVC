@@ -34,7 +34,7 @@ void CannyThreshold(int, void*) {
 }
 
 /* CLAHE + Laplacian filter */
-int main22(int argc, char** argv) {
+int main123(int argc, char** argv) {
 
 	VideoCapture cap(0); // open the default camera
 	if (cap.isOpened()) {
@@ -59,32 +59,12 @@ int main22(int argc, char** argv) {
 
 			/// Show the image
 			CannyThreshold(0, 0);
-			/* La*b*	*/
-			cv::Mat lab;
-			cv::cvtColor(frame, lab, CV_BGR2Lab);
 
-			// Extract the L channel
-			std::vector<cv::Mat> lab_planes(3);
-			cv::split(lab, lab_planes); // now we have the L image in lab_planes[0]
-
-			// apply the CLAHE algorithm to the L channel
-			cv::Ptr<cv::CLAHE> clahe = cv::createCLAHE();
-			clahe->setClipLimit(4);
-			cv::Mat dst;
-			clahe->apply(lab_planes[0], dst);
-
-			// Merge the the color planes back into an Lab image
-			dst.copyTo(lab_planes[0]);
-			cv::merge(lab_planes, lab);
-
-			// convert back to RGB
-			cv::Mat image_clahe;
-			cv::cvtColor(lab, image_clahe, CV_Lab2BGR);
 
 			Mat img, imgLaplacian, imgResult;
 
 			//------------------------------------------------------------------------------------------- real stuffs now
-			img = image_clahe;
+			img = frame;
 
 			/* We define a kernel */
 			Mat kernel =

@@ -13,13 +13,13 @@ int applyFilters(Mat p1, int n) {
 
 	// Filters: Blur and dilate
 	Mat element = getStructuringElement(MORPH_RECT, Size(n,n));
-	blur(p1, p1, Size(2 * n, 2 * n));
+	medianBlur(p1, p1, 2*n-1);
 	inRange(p1, white, whitemax, p1);
 	dilate(p1, p1, element);
 	inRange(p1, white, whitemax, p1);
 }
 
-int main1(int argc, char** argv) {
+int main(int argc, char** argv) {
 	enum Space {
 		blue, green, red
 	};

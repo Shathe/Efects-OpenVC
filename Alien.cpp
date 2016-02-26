@@ -19,7 +19,7 @@ int applyFilters(Mat p1, int n) {
 	inRange(p1, white, whitemax, p1);
 }
 
-int main(int argc, char** argv) {
+int main221(int argc, char** argv) {
 	enum Space {
 		blue, green, red
 	};

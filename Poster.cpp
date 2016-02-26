@@ -45,59 +45,74 @@ Mat posterize(Mat src, int NeachChannel, int offset) {
 		/* As the humam being detects better variations of the channel green > red > blue
 		 * if you have to choose between them, for giving more range to those channels */
 
-		if(NeachChannel==0)NeachChannel++;
-		int rangeSectionB = (maxB - minB) / (NeachChannel );
-		int rangeSectionG = (maxG - minG) / (NeachChannel );
-		int rangeSectionR = (maxR - minR) / (NeachChannel );
+		if (NeachChannel == 0)
+			NeachChannel++;
+		int rangeSectionB = (maxB - minB) / (NeachChannel);
+		int rangeSectionG = (maxG - minG) / (NeachChannel);
+		int rangeSectionR = (maxR - minR) / (NeachChannel);
 
 		if (extrasDivisions > 1) {
-			rangeSectionR = (maxG - minG) / (NeachChannel+1);
+			rangeSectionR = (maxG - minG) / (NeachChannel + 1);
 		}
-
-		cv:Scalar meanB = mean( channels[blue] );
+		/*Calculate the mean of each channel */
+		cv: Scalar meanB = mean(channels[blue]);
 		float meanBF = meanB.val[0];
 		uchar meanBC = meanBF;
-		Scalar meanG = mean( channels[green] );
+		Scalar meanG = mean(channels[green]);
 		float meanGF = meanG.val[0];
 		uchar meanGC = meanGF;
-		Scalar meanR = mean( channels[red] );
+		Scalar meanR = mean(channels[red]);
 		float meanRF = meanR.val[0];
 		uchar meanRC = meanRF;
+		/* Calculate the variation along the histogram */
+		Mat prueba;
+		equalizeHist(channels[blue], prueba);
+		prueba = abs(channels[blue] - prueba);
+		float variationBlue = (sum(prueba)[0] / 150000000);
+		equalizeHist(channels[green], prueba);
+		prueba = abs(channels[green] - prueba);
+		float variationGreen = (sum(prueba)[0] / 150000000);
+		equalizeHist(channels[red], prueba);
+		prueba = abs(channels[red] - prueba);
+		float variationRed = (sum(prueba)[0] / 150000000);
 
-
-
+		std::cout << variationRed;
+		std::cout << "  ";
 		for (int i = 0; i < src.rows; ++i) {
 			for (int j = 0; j < src.cols; ++j) {
 				uchar numSectionBlue = (channels[blue].at<uchar>(i, j)
 						/ rangeSectionB);
 				uchar result = numSectionBlue * rangeSectionB;
-				if (NeachChannel==1) {
+				if (NeachChannel == 1) {
 					/*if NeachChannel == 0, 1 or 2 colours */
 					channels[blue].at<uchar>(i, j) = meanBC;
 				} else {
-					channels[blue].at<uchar>(i, j) = result*0.85+meanBC*0.15;
+					channels[blue].at<uchar>(i, j) = result
+							* (1 - variationBlue) + meanBC * variationBlue;
 
 				}
 
 				uchar numSectionGreen = (channels[green].at<uchar>(i, j)
 						/ rangeSectionG);
-				 result = numSectionGreen * rangeSectionG;
+				result = numSectionGreen * rangeSectionG;
 				if (result < 0) {
 					/*if NeachChannel == 0, 1 or 2 colours */
 					channels[green].at<uchar>(i, j) = meanGC;
 				} else {
-					channels[green].at<uchar>(i, j) = result*0.85+meanGC*0.15;
+					channels[green].at<uchar>(i, j) = result
+							* (1 - variationGreen) + meanGC * variationGreen;
 
 				}
 
 				uchar numSectionRed = (channels[red].at<uchar>(i, j)
 						/ rangeSectionR);
-				 result = numSectionRed * rangeSectionR;
+				result = numSectionRed * rangeSectionR;
 				if (result < 0) {
 					/*if NeachChannel == 0, 1 or 2 colours */
 					channels[red].at<uchar>(i, j) = meanRC;
 				} else {
-					channels[red].at<uchar>(i, j) = result*0.85+meanRC*0.15;
+					channels[red].at<uchar>(i, j) = result * (1 - variationRed)
+							+ meanRC * variationRed;
 
 				}
 
@@ -106,13 +121,10 @@ Mat posterize(Mat src, int NeachChannel, int offset) {
 
 		merge(channels, src); //merge 3 channels including the modified 1st channel into one image
 
-		/* Posprocesed just in case some ranges have very few pixels */
-
-
 	}
 	return src;
 }
-int main221(int argc, char** argv) {
+int main(int argc, char** argv) {
 
 	VideoCapture cap(0); // open the default camera
 	if (cap.isOpened()) {
@@ -124,7 +136,7 @@ int main221(int argc, char** argv) {
 			if (frame.empty())
 				break; // end of video stream
 
-			frame = posterize(frame, 2,0);
+			frame = posterize(frame, 30, 0);
 			imshow(":O I can see you!", frame);
 
 			if (waitKey(1) == 27)

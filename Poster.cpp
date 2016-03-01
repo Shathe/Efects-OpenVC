@@ -122,7 +122,7 @@ Mat posterize(Mat src, int NeachChannel, int offset) {
 	}
 	return src;
 }
-int main11(int argc, char** argv) {
+int main(int argc, char** argv) {
 
 	VideoCapture cap(0); // open the default camera
 	if (cap.isOpened()) {

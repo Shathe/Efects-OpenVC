@@ -3,7 +3,7 @@
 
 using namespace cv;
 
-int main(int argc, char** argv) {
+int main57(int argc, char** argv) {
 	enum Space {
 		Ycrcb, Lab, HSV, RGB
 	};

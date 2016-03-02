@@ -3,7 +3,7 @@
 
 using namespace cv;
 
-int main57(int argc, char** argv) {
+int main(int argc, char** argv) {
 	enum Space {
 		Ycrcb, Lab, HSV, RGB
 	};
@@ -11,22 +11,12 @@ int main57(int argc, char** argv) {
 	if (cap.isOpened()) {
 		// check if we succeeded
 
-		double alpha = 1.75; /* contrast factor */
-		double beta = 30; /* brightness bias */
+
 		String colorSpace = "Ycrcb";
 		/// Initialize values
 		std::cout << "Contrast enhancement and histogram equalization "
 				<< std::endl;
-		std::cout << "-------------------------" << std::endl;
-		std::cout << "Enter the factor (must be a number, for instance 1.25): ";
-		std::cin >> alpha;
-		std::cout << "Enter the bias (must be a number, for instance 10): ";
-		std::cin >> beta;
-		std::cout
-				<< "Enter the color space Ycrcb, Lab, HSV or RGB (this last one no so good)\n"
-						"(Ycrcb or Lab are strongly recommend. Ycrcb by defect)";
 
-		std::cin >> colorSpace;
 		Space space = Ycrcb;
 		for (unsigned int i = 0; i < colorSpace.length(); ++i) {
 			colorSpace[i] = tolower(colorSpace[i]);
@@ -75,24 +65,14 @@ int main57(int argc, char** argv) {
 			/* Equalize histogram of the Light channel */
 			switch (space) {
 			case Ycrcb:
+				//channels[0].convertTo(channels[0], -1, alpha, beta);
 				equalizeHist(channels[0], channels[0]);
-				channels[0].convertTo(channels[0], -1, alpha, beta);
 				break;
 			case HSV:
 				equalizeHist(channels[2], channels[2]);
-				channels[2].convertTo(channels[2], -1, alpha, beta);
 				break;
 			case Lab:
 				equalizeHist(channels[0], channels[0]);
-				channels[0].convertTo(channels[0], -1, alpha, beta);
-				break;
-			case RGB:
-				equalizeHist(channels[0], channels[0]);
-				equalizeHist(channels[1], channels[1]);
-				equalizeHist(channels[2], channels[2]);
-				channels[0].convertTo(channels[0], -1, alpha, beta);
-				channels[1].convertTo(channels[1], -1, alpha, beta);
-				channels[2].convertTo(channels[2], -1, alpha, beta);
 				break;
 			default:
 				;
@@ -116,7 +96,7 @@ int main57(int argc, char** argv) {
 			}
 
 			// Show images
-			imshow(":O I can see you!", frame);
+			imshow("Contrast!", frame);
 			cv::Mat lab;
 			cv::cvtColor(frame, lab, CV_BGR2Lab);
 
@@ -126,7 +106,7 @@ int main57(int argc, char** argv) {
 
 			// apply the CLAHE algorithm to the L channel
 			cv::Ptr<cv::CLAHE> clahe = cv::createCLAHE();
-			clahe->setClipLimit(4);
+			clahe->setClipLimit(1.7);
 			cv::Mat dst;
 			clahe->apply(lab_planes[0], dst);
 

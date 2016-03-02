@@ -34,7 +34,7 @@ void CannyThreshold(int, void*) {
 }
 
 /* CLAHE + Laplacian filter */
-int main123(int argc, char** argv) {
+int main4(int argc, char** argv) {
 
 	VideoCapture cap(0); // open the default camera
 	if (cap.isOpened()) {

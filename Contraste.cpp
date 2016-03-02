@@ -10,8 +10,17 @@ int main(int argc, char** argv) {
 	VideoCapture cap(0); // open the default camera
 	if (cap.isOpened()) {
 		// check if we succeeded
+		Mat hist1, hist2;
+		int histSize = 256;
+		int hist_w = 512;
+		int hist_h = 400;
+		int bin_w = cvRound((double) hist_w / histSize);
+		/// Set the ranges ( for B,G,R) )
+		float range[] = { 0, 256 };
+		const float* histRange = { range };
 
-
+		bool uniform = true;
+		bool accumulate = false;
 		String colorSpace = "Ycrcb";
 		/// Initialize values
 		std::cout << "Contrast enhancement and histogram equalization "
@@ -62,6 +71,8 @@ int main(int argc, char** argv) {
 
 			split(img_hist_equalized, channels);
 
+			calcHist(&channels[0], 1, 0, Mat(), hist1, 1, &histSize, &histRange,
+					uniform, accumulate);
 			/* Equalize histogram of the Light channel */
 			switch (space) {
 			case Ycrcb:
@@ -77,6 +88,11 @@ int main(int argc, char** argv) {
 			default:
 				;
 			}
+
+			/// Compute the histograms:
+
+			calcHist(&channels[0], 1, 0, Mat(), hist2, 1, &histSize, &histRange,
+					uniform, accumulate);
 
 			merge(channels, img_hist_equalized); //merge 3 channels including the modified 1st channel into one image
 
@@ -104,7 +120,34 @@ int main(int argc, char** argv) {
 			std::vector<cv::Mat> lab_planes(3);
 			cv::split(lab, lab_planes); // now we have the L image in lab_planes[0]
 
+			Mat histImage(hist_h, hist_w, CV_8UC3, Scalar(0, 0, 0));
+
+			/// Normalize the result to [ 0, histImage.rows ]
+			normalize(hist1, hist1, 0, histImage.rows, NORM_MINMAX, -1, Mat());
+			normalize(hist2, hist2, 0, histImage.rows, NORM_MINMAX, -1, Mat());
+			/// Draw for each channel
+			for (int i = 1; i < histSize; i++) {
+				line(histImage,
+						Point(bin_w * (i - 1),
+								hist_h - cvRound(hist2.at<float>(i - 1))),
+						Point(bin_w * (i),
+								hist_h - cvRound(hist2.at<float>(i))),
+						Scalar(0, 255, 0), 2, 8, 0);
+				line(histImage,
+						Point(bin_w * (i - 1),
+								hist_h - cvRound(hist1.at<float>(i - 1))),
+						Point(bin_w * (i),
+								hist_h - cvRound(hist1.at<float>(i))),
+						Scalar(0, 0, 255), 2, 8, 0);
+			}
+
+			/// Display
+			imshow("Histograma Contraste (Verde ecualizado)", histImage);
 			// apply the CLAHE algorithm to the L channel
+
+			calcHist(&lab_planes[0], 1, 0, Mat(), hist1, 1, &histSize,
+					&histRange, uniform, accumulate);
+
 			cv::Ptr<cv::CLAHE> clahe = cv::createCLAHE();
 			clahe->setClipLimit(1.7);
 			cv::Mat dst;
@@ -112,8 +155,31 @@ int main(int argc, char** argv) {
 
 			// Merge the the color planes back into an Lab image
 			dst.copyTo(lab_planes[0]);
+			calcHist(&lab_planes[0], 1, 0, Mat(), hist2, 1, &histSize,
+					&histRange, uniform, accumulate);
 			cv::merge(lab_planes, lab);
+			Mat histImage2(hist_h, hist_w, CV_8UC3, Scalar(0, 0, 0));
 
+			normalize(hist1, hist1, 0, histImage2.rows, NORM_MINMAX, -1, Mat());
+			normalize(hist2, hist2, 0, histImage2.rows, NORM_MINMAX, -1, Mat());
+			/// Draw for each channel
+			for (int i = 1; i < histSize; i++) {
+				line(histImage2,
+						Point(bin_w * (i - 1),
+								hist_h - cvRound(hist2.at<float>(i - 1))),
+						Point(bin_w * (i),
+								hist_h - cvRound(hist2.at<float>(i))),
+						Scalar(0, 255, 0), 2, 8, 0);
+				line(histImage2,
+						Point(bin_w * (i - 1),
+								hist_h - cvRound(hist1.at<float>(i - 1))),
+						Point(bin_w * (i),
+								hist_h - cvRound(hist1.at<float>(i))),
+						Scalar(0, 0, 255), 2, 8, 0);
+			}
+
+			/// Display
+			imshow("Histograma Clahe (Verde ecualizado)", histImage2);
 			// convert back to RGB
 			cv::Mat image_clahe;
 			cv::cvtColor(lab, image_clahe, CV_Lab2BGR);
